@@ -288,7 +288,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.startingGameState = startingGameState
 
     def getStartState(self):
         """
@@ -305,9 +304,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        if len(self.corners) != len(state[1]):
-            return False
-        return True
+        return len(state[1]) == 4
 
         util.raiseNotDefined()
 
@@ -382,14 +379,8 @@ def cornersHeuristic(state, problem):
     pos = state[0]
     listCorner = [corner for corner in corners if corner not in state[1]]
 
-    # for corner in corners:
-    #     if corner not in state[1]:
-    #         listCorner.append(corner)
-
     while len(listCorner) > 0:
         distanceList = [manhattanDistance(pos, corner) for corner in listCorner]
-        # for corner in listCorner:
-        #     distanceList.append(manhattanDistance(pos, corner))
         minDistance = min(distanceList)
         distance = distanceList.index(minDistance)
         pos = listCorner[distance]
@@ -497,6 +488,7 @@ def foodHeuristic(state, problem):
     for x, y in food:
         pos = (x, y)
         distance.append(mazeDistance(position, pos, problem.startingGameState))
+
     return max(distance)
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -566,10 +558,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        # goal = min([(util.manhattanDistance(state, goal), goal) for goal in self.food.asList()])
-        # if goal == state:
-        #     return True
-        # return False
+
         return state in self.food.asList()
 
         util.raiseNotDefined()

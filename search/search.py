@@ -87,82 +87,45 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    # from util import Stack
-    # stack = Stack()
-    # startState = problem.getStartState()
-    # visited = {}
-    # action = []
-    # cost = 0
-    # stack.push((startState, action, cost))
-    # while not stack.isEmpty():
-    #     currentState = stack.pop()
-    #     if problem.isGoalState(currentState[0]):
-    #         return currentState[1]
-    #     if currentState[0] not in visited:
-    #         visited[currentState[0]] = True
-    #         for nextState, nextAct, co in problem.getSuccessors(currentState[0]):
-    #             if nextState and nextState not in visited:
-    #                 stack.push((nextState, currentState[1] + [nextAct], currentState[2] + co))
     startState = problem.getStartState()
-    if problem.isGoalState(startState):
-        return []
+    listAction = []
+    cost = 0
+    stack = util.Stack()
+    stack.push((startState, [], cost))
 
-    exploredStates = []
-    frontier = util.Stack()
-    frontier.push((startState, []))  # tuple: (state/node, list actions: 'action' is the action required to get there)
+    while not stack.isEmpty():
+        currentState, actions, currentCost = stack.pop()
+        if problem.isGoalState(currentState):
+            return actions
 
-    while not frontier.isEmpty():
-        currentState, actions = frontier.pop()
-        if currentState not in exploredStates:
-            exploredStates.append(currentState)
-
-            if problem.isGoalState(currentState):
-                return actions
+        elif currentState not in listAction:
+            listAction.append(currentState)
 
             for successor, action, stepCost in problem.getSuccessors(currentState):
-                newAction = actions + [action]
-                frontier.push((successor, newAction))
+                stack.push((successor, actions + [action], currentCost + stepCost))
 
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    # from util import Queue
-    # queue = Queue()
-    # startState = problem.getStartState()
-    # visited = {}
-    # action = []
-    # queue.push((startState, action))
-    # while not queue.isEmpty():
-    #     currentState = queue.pop()
-    #     if problem.isGoalState(currentState[0]):
-    #         return currentState[1]
-    #     if currentState[0] not in visited:
-    #         visited[currentState[0]] = True
-    #         for nextState, nextAct, co in problem.getSuccessors(currentState[0]):
-    #             if nextState and nextState not in visited:
-    #                 queue.push((nextState, currentState[1] + [nextAct], currentState[2] + co))
 
     startState = problem.getStartState()
-    if problem.isGoalState(startState):
-        return []
+    listAction = []
+    cost = 0
+    queue = util.Queue()
+    queue.push((startState, [], cost))
 
-    exploredStates = []
-    frontier = util.Queue()
-    frontier.push((startState, []))
+    while not queue.isEmpty():
+        currentState, actions, currentCost = queue.pop()
+        if problem.isGoalState(currentState):
+            return actions
 
-    while not frontier.isEmpty():
-        currentState, actions = frontier.pop()
-        if currentState not in exploredStates:
-            exploredStates.append(currentState)
-
-            if problem.isGoalState(currentState):
-                return actions
+        elif currentState not in listAction:
+            listAction.append(currentState)
 
             for successor, action, stepCost in problem.getSuccessors(currentState):
-                newAction = actions + [action]
-                frontier.push((successor, newAction))
+                queue.push((successor, actions + [action], currentCost + stepCost))
 
     util.raiseNotDefined()
 
@@ -170,27 +133,23 @@ def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     startState = problem.getStartState()
-    if problem.isGoalState(startState):
-        return []
+    listAction = []
+    cost = 0
+    priorityQueue = util.PriorityQueue()
 
-    exploredStates = []
-    frontier = util.PriorityQueue()
+    priorityQueue.push((startState, [], cost), cost)
 
-    # func param <-> elementPQ: (item: <state, actions, cost>, priority)
-    # -> heapq.heappush(self.heap, entry: (priority, self.count, item))
-    frontier.push((startState, [], 0), 0)
+    while not priorityQueue.isEmpty():
+        currentState, actions, currentCost = priorityQueue.pop()
 
-    while not frontier.isEmpty():
-        currentState, actions, pathCost = frontier.pop()  # pop return only item
+        if problem.isGoalState(currentState):
+            return actions
 
-        if currentState not in exploredStates:
-            exploredStates.append(currentState)
-
-            if problem.isGoalState(currentState):
-                return actions
+        elif currentState not in listAction:
+            listAction.append(currentState)
 
             for successor, action, stepCost in problem.getSuccessors(currentState):
-                frontier.update((successor, actions + [action], pathCost + stepCost), pathCost + stepCost)
+                priorityQueue.update((successor, actions + [action], currentCost + stepCost), currentCost + stepCost)
 
     util.raiseNotDefined()
 
@@ -205,28 +164,23 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     startState = problem.getStartState()
-    if problem.isGoalState(startState):
-        return []
+    listAction = []
+    cost = 0
+    priorityQueue = util.PriorityQueue()
 
-    exploredStates = []
-    frontier = util.PriorityQueue()
+    priorityQueue.push((startState, [], cost), cost)
 
-    # func param <-> elementPQ: (item: <state, actions, cost>, priority)
-    # -> heapq.heappush(self.heap, entry: (priority, self.count, item))
-    frontier.push((startState, [], 0), 0)
+    while not priorityQueue.isEmpty():
+        currentState, actions, currentCost = priorityQueue.pop()
+        if problem.isGoalState(currentState):
+            return actions
 
-    while not frontier.isEmpty():
-        currentState, actions, pathCost = frontier.pop()
-        if currentState not in exploredStates:
-            exploredStates.append(currentState)
-
-            if problem.isGoalState(currentState):
-                return actions
+        elif currentState not in listAction:
+            listAction.append(currentState)
 
             for successor, action, stepCost in problem.getSuccessors(currentState):
-                pathCostToSuc = pathCost + stepCost
-                heuristicCost = pathCostToSuc + heuristic(successor, problem)
-                frontier.push((successor, actions + [action], pathCostToSuc), heuristicCost)
+                priorityQueue.update((successor, actions + [action], currentCost + stepCost),
+                                   currentCost + stepCost + heuristic(successor, problem))
 
     util.raiseNotDefined()
 
